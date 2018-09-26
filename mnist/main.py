@@ -5,6 +5,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
 from torchvision import datasets, transforms
+import time
 
 class Net(nn.Module):
     def __init__(self):
@@ -24,7 +25,7 @@ class Net(nn.Module):
         x = self.fc2(x)
         return F.log_softmax(x, dim=1)
 
-def train(args, model, device, train_loader, optimizer, epoch):
+def train(args, model, device, train_loader, optimizer, epoch, start_time):
     model.train()
     for batch_idx, (data, target) in enumerate(train_loader):
         data, target = data.to(device), target.to(device)
@@ -34,9 +35,11 @@ def train(args, model, device, train_loader, optimizer, epoch):
         loss.backward()
         optimizer.step()
         if batch_idx % args.log_interval == 0:
-            print('Train Epoch: {} [{}/{} ({:.0f}%)]\tLoss: {:.6f}'.format(
+            current_time = time.perf_counter()
+            elapsed_time = current_time - start_time
+            print('Train Epoch: {} [{}/{} ({:.0f}%)]\tLoss: {:.6f} Time: {:.6f}'.format(
                 epoch, batch_idx * len(data), len(train_loader.dataset),
-                100. * batch_idx / len(train_loader), loss.item()))
+                100. * batch_idx / len(train_loader), loss.item(), elapsed_time))
 
 def test(args, model, device, test_loader):
     model.eval()
@@ -101,7 +104,8 @@ def main():
     optimizer = optim.SGD(model.parameters(), lr=args.lr, momentum=args.momentum)
 
     for epoch in range(1, args.epochs + 1):
-        train(args, model, device, train_loader, optimizer, epoch)
+        start_time = time.perf_counter()
+        train(args, model, device, train_loader, optimizer, epoch, start_time)
         test(args, model, device, test_loader)
 
 
