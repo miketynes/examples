@@ -8,6 +8,7 @@ import torch.optim as optim
 from torch.utils.data import DataLoader
 from model import Net
 from data import get_training_set, get_test_set
+import time
 
 # Training settings
 parser = argparse.ArgumentParser(description='PyTorch Super Res Example')
@@ -43,7 +44,7 @@ criterion = nn.MSELoss()
 optimizer = optim.Adam(model.parameters(), lr=opt.lr)
 
 
-def train(epoch):
+def train(epoch, start_time):
     epoch_loss = 0
     for iteration, batch in enumerate(training_data_loader, 1):
         input, target = batch[0].to(device), batch[1].to(device)
@@ -54,7 +55,9 @@ def train(epoch):
         loss.backward()
         optimizer.step()
 
-        print("===> Epoch[{}]({}/{}): Loss: {:.4f}".format(epoch, iteration, len(training_data_loader), loss.item()))
+        current_time = time.perf_counter()
+        elapsed_time = current_time - start_time
+        print("===> Epoch[{}]({}/{}): Loss: {:.4f} Time: {:.6f}".format(epoch, iteration, len(training_data_loader), loss.item(), elapsed_time))
 
     print("===> Epoch {} Complete: Avg. Loss: {:.4f}".format(epoch, epoch_loss / len(training_data_loader)))
 
@@ -78,6 +81,7 @@ def checkpoint(epoch):
     print("Checkpoint saved to {}".format(model_out_path))
 
 for epoch in range(1, opt.nEpochs + 1):
-    train(epoch)
+    start_time = time.perf_counter()
+    train(epoch, start_time)
     test()
     checkpoint(epoch)
