@@ -80,8 +80,8 @@ def checkpoint(epoch):
     torch.save(model, model_out_path)
     print("Checkpoint saved to {}".format(model_out_path))
 
+start_time = time.perf_counter()
 for epoch in range(1, opt.nEpochs + 1):
-    start_time = time.perf_counter()
     train(epoch, start_time)
     test()
     checkpoint(epoch)
