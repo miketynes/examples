@@ -44,7 +44,7 @@ criterion = nn.MSELoss()
 optimizer = optim.Adam(model.parameters(), lr=opt.lr)
 
 
-def train(epoch, start_time):
+def train(epoch):
     epoch_loss = 0
     for iteration, batch in enumerate(training_data_loader, 1):
         input, target = batch[0].to(device), batch[1].to(device)
@@ -55,9 +55,7 @@ def train(epoch, start_time):
         loss.backward()
         optimizer.step()
 
-        current_time = time.perf_counter()
-        elapsed_time = current_time - start_time
-        print("===> Epoch[{}]({}/{}): Loss: {:.4f} Time: {:.6f}".format(epoch, iteration, len(training_data_loader), loss.item(), elapsed_time))
+        print("===> Epoch[{}]({}/{}): Loss: {:.4f} Time: {:.6f}".format(epoch, iteration, len(training_data_loader), loss.item(), time.time()))
 
     print("===> Epoch {} Complete: Avg. Loss: {:.4f}".format(epoch, epoch_loss / len(training_data_loader)))
 
@@ -80,8 +78,7 @@ def checkpoint(epoch):
     torch.save(model, model_out_path)
     print("Checkpoint saved to {}".format(model_out_path))
 
-start_time = time.perf_counter()
 for epoch in range(1, opt.nEpochs + 1):
-    train(epoch, start_time)
+    train(epoch)
     test()
     checkpoint(epoch)
