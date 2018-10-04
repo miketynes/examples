@@ -113,7 +113,7 @@ for epoch in range(args.epochs):
                      dev_loss = criterion(answer, dev_batch.label)
             dev_acc = 100. * n_dev_correct / len(dev)
 
-            print(dev_log_template.format(time.time()-start,
+            print(dev_log_template.format(time.time(),
                 epoch, iterations, 1+batch_idx, len(train_iter),
                 100. * (1+batch_idx) / len(train_iter), loss.item(), dev_loss.item(), train_acc, dev_acc))
 
@@ -135,7 +135,7 @@ for epoch in range(args.epochs):
         elif iterations % args.log_every == 0:
 
             # print progress message
-            print(log_template.format(time.time()-start,
+            print(log_template.format(time.time(),
                 epoch, iterations, 1+batch_idx, len(train_iter),
                 100. * (1+batch_idx) / len(train_iter), loss.item(), ' '*8, n_correct/n_total*100, ' '*12))
 
