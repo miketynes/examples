@@ -6,6 +6,7 @@ from torch import nn, optim
 from torch.nn import functional as F
 from torchvision import datasets, transforms
 from torchvision.utils import save_image
+from time import time
 
 
 parser = argparse.ArgumentParser(description='VAE MNIST Example')
@@ -47,7 +48,7 @@ class VAE(nn.Module):
         self.fc4 = nn.Linear(400, 784)
 
     def encode(self, x):
-        h1 = F.relu(self.fc1(x))
+        h1 = F.sigmoid(self.fc1(x))
         return self.fc21(h1), self.fc22(h1)
 
     def reparameterize(self, mu, logvar):
@@ -59,7 +60,7 @@ class VAE(nn.Module):
             return mu
 
     def decode(self, z):
-        h3 = F.relu(self.fc3(z))
+        h3 = F.sigmoid(self.fc3(z))
         return torch.sigmoid(self.fc4(h3))
 
     def forward(self, x):
@@ -97,10 +98,10 @@ def train(epoch):
         train_loss += loss.item()
         optimizer.step()
         if batch_idx % args.log_interval == 0:
-            print('Train Epoch: {} [{}/{} ({:.0f}%)]\tLoss: {:.6f}'.format(
+            print('Train Epoch: {} [{}/{} ({:.0f}%)]\tLoss: {:.6f} Time: {}'.format(
                 epoch, batch_idx * len(data), len(train_loader.dataset),
                 100. * batch_idx / len(train_loader),
-                loss.item() / len(data)))
+                loss.item() / len(data), time()))
 
     print('====> Epoch: {} Average loss: {:.4f}'.format(
           epoch, train_loss / len(train_loader.dataset)))
