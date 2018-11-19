@@ -7,6 +7,7 @@ from torch.nn import functional as F
 from torchvision import datasets, transforms
 from torchvision.utils import save_image
 from time import time
+import sys
 
 
 parser = argparse.ArgumentParser(description='VAE MNIST Example')
@@ -102,9 +103,10 @@ def train(epoch):
                 epoch, batch_idx * len(data), len(train_loader.dataset),
                 100. * batch_idx / len(train_loader),
                 loss.item() / len(data), time()))
+            sys.stdout.flush()
 
-    print('====> Epoch: {} Average loss: {:.4f}'.format(
-          epoch, train_loss / len(train_loader.dataset)))
+    #print('====> Epoch: {} Average loss: {:.4f}'.format(
+    #      epoch, train_loss / len(train_loader.dataset)))
 
 
 def test(epoch):
@@ -123,7 +125,7 @@ def test(epoch):
                          'results/reconstruction_' + str(epoch) + '.png', nrow=n)
 
     test_loss /= len(test_loader.dataset)
-    print('====> Test set loss: {:.4f}'.format(test_loss))
+    #print('====> Test set loss: {:.4f}'.format(test_loss))
 
 if __name__ == "__main__":
     for epoch in range(1, args.epochs + 1):
