@@ -36,6 +36,11 @@ def train(args, model, device, train_loader, optimizer, epoch):
         loss.backward()
         optimizer.step()
         if batch_idx % args.log_interval == 0:
+            if args.log_prefix:
+            print('{} Train Epoch: {} [{}/{} ({:.0f}%)]\tLoss: {:.6f} Time: {:.6f}'.format(
+                args.log_prefix, epoch, batch_idx * len(data), len(train_loader.dataset),
+                100. * batch_idx / len(train_loader), loss.item(), time.time()))                
+            else:
             print('Train Epoch: {} [{}/{} ({:.0f}%)]\tLoss: {:.6f} Time: {:.6f}'.format(
                 epoch, batch_idx * len(data), len(train_loader.dataset),
                 100. * batch_idx / len(train_loader), loss.item(), time.time()))
@@ -75,8 +80,10 @@ def main():
                         help='disables CUDA training')
     parser.add_argument('--seed', type=int, default=1, metavar='S',
                         help='random seed (default: 1)')
-    parser.add_argument('--log-interval', type=int, default=10, metavar='N',
+    parser.add_argument('--log-interval', type=int, default=1, metavar='N',
                         help='how many batches to wait before logging training status')
+    parser.add_argument('--log-prefix', type=str, default=None,
+                    help='A prefix for logging statements')
     args = parser.parse_args()
     use_cuda = not args.no_cuda and torch.cuda.is_available()
 

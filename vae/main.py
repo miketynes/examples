@@ -21,6 +21,9 @@ parser.add_argument('--seed', type=int, default=1, metavar='S',
                     help='random seed (default: 1)')
 parser.add_argument('--log-interval', type=int, default=10, metavar='N',
                     help='how many batches to wait before logging training status')
+parser.add_argument('--log-prefix', type=str, default=None,
+                    help='A prefix for logging statements')
+
 args = parser.parse_args()
 args.cuda = not args.no_cuda and torch.cuda.is_available()
 
@@ -99,10 +102,16 @@ def train(epoch):
         train_loss += loss.item()
         optimizer.step()
         if batch_idx % args.log_interval == 0:
-            print('Train Epoch: {} [{}/{} ({:.0f}%)]\tLoss: {:.6f} Time: {}'.format(
-                epoch, batch_idx * len(data), len(train_loader.dataset),
-                100. * batch_idx / len(train_loader),
-                loss.item() / len(data), time()))
+            if args.log_prefix:
+                    print('{} Train Epoch: {} [{}/{} ({:.0f}%)]\tLoss: {:.6f} Time: {}'.format(
+                    args.log_prefix, epoch, batch_idx * len(data), len(train_loader.dataset),
+                    100. * batch_idx / len(train_loader),
+                    loss.item() / len(data), time()))
+            else:
+                print('Train Epoch: {} [{}/{} ({:.0f}%)]\tLoss: {:.6f} Time: {}'.format(
+                    epoch, batch_idx * len(data), len(train_loader.dataset),
+                    100. * batch_idx / len(train_loader),
+                    loss.item() / len(data), time()))
             sys.stdout.flush()
 
     #print('====> Epoch: {} Average loss: {:.4f}'.format(
@@ -136,3 +145,5 @@ if __name__ == "__main__":
             sample = model.decode(sample).cpu()
             save_image(sample.view(64, 1, 28, 28),
                        'results/sample_' + str(epoch) + '.png')
+
+    print("Done!")
